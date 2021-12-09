@@ -151,7 +151,8 @@
         validate_certs: "{{ validate_certs }}"
         display_name: "{{ item.display_name }}"
         cluster_profile_bindings:
-        - profile_id: "{{ item.cluster_profile_binding_id }}"
+        - profile_name: "nsx-default-edge-high-availability-profile"
+          resource_type: "EdgeHighAvailabilityProfile"
         members: "{{ item.members }}"
         state: "{{ state }}"
       with_items:

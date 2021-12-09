@@ -232,7 +232,7 @@
 
   "transport_nodes": [
     {
-      "display_name": "nsx-edge-0",
+      "display_name": "nsx-edge-01",
       "description": "NSX Edge Node 01",
       "host_switches": [
         {
@@ -243,6 +243,7 @@
             }
           ],
           "host_switch_name": "edge-nvds",
+          "host_switch_mode": "STANDARD",
           "pnics": [
             {
               "device_name": "fp-eth0",
@@ -268,18 +269,18 @@
           ],
       }],
       "node_deployment_info": {
-        "deployment_type": "VIRTUAL_MACHINE",
         "deployment_config": {
           "vm_deployment_config": {
             "vc_name": "vcsa-01a",
-            "compute": "domain-c7",
-            "storage": "datastore-23",
-            "host": "host-12",
-            "management_network_id": "dvportgroup-34",
-            "hostname": "edgenode-01a.corp.local",
-            "data_network": [
-              "DCInABox-Uplink-Trunk",
-              "DCInABox-Overlay-Trunk",
+            "vc_username": "administrator@vsphere.local",
+            "vc_password": "VMware1!",
+            "compute": "Cluster-02a",
+            "storage": "nfs-02",
+            "host": "esx-03a.corp.local",
+            "management_network": "SiteA-vDS-02-Mgmt",
+            "data_networks": [
+              "DcInABox-Uplink-Trunk",
+              "DcInABox-Overlay-Trunk",
             ],
             "management_port_subnets": [
               {
@@ -290,7 +291,8 @@
             "default_gateway_addresses": [ "192.168.110.1" ],
             "allow_ssh_root_login": true,
             "enable_ssh": true,
-            "placement_type": "VsphereDeploymentConfig"
+            "placement_type": "VsphereDeploymentConfig",
+            "hostname": "nsx-edge-01"
           },
           "form_factor": "MEDIUM",
           "node_user_settings": {
@@ -303,6 +305,82 @@
         },
         "resource_type": "EdgeNode",
         "display_name": "nsx-edge-01"
+      }
+    },
+    {
+      "display_name": "nsx-edge-02",
+      "description": "NSX Edge Node 02",
+      "host_switches": [
+        {
+          "host_switch_profiles": [
+            {
+              "name": "edge-uplink-profile",
+              "type": "UplinkHostSwitchProfile"
+            }
+          ],
+          "host_switch_name": "edge-nvds",
+          "host_switch_mode": "STANDARD",
+          "pnics": [
+            {
+              "device_name": "fp-eth0",
+              "uplink_name": "uplink-1"
+            },
+            {
+              "device_name": "fp-eth1",
+              "uplink_name": "uplink-2"
+            }
+          ],
+          "ip_assignment_spec":
+            {
+              "resource_type": "StaticIpPoolSpec",
+              "ip_pool_name": "TEP-IP-POOL"
+            },
+          "transport_zone_endpoints": [
+            {
+              "transport_zone_name": "OVERLAY-TZ"
+            },
+            {
+              "transport_zone_name": "VLAN-EDGE-TZ"
+            }
+          ],
+      }],
+      "node_deployment_info": {
+        "deployment_config": {
+          "vm_deployment_config": {
+            "vc_name": "vcsa-01a",
+            "vc_username": "administrator@vsphere.local",
+            "vc_password": "VMware1!",
+            "compute": "Cluster-02a",
+            "storage": "nfs-02",
+            "host": "esx-04a.corp.local",
+            "management_network": "SiteA-vDS-02-Mgmt",
+            "data_networks": [
+              "DcInABox-Uplink-Trunk",
+              "DcInABox-Overlay-Trunk",
+            ],
+            "management_port_subnets": [
+              {
+                "ip_addresses": [ "192.168.110.20" ],
+                "prefix_length": 24
+              }
+            ],
+            "default_gateway_addresses": [ "192.168.110.1" ],
+            "allow_ssh_root_login": true,
+            "enable_ssh": true,
+            "placement_type": "VsphereDeploymentConfig",
+            "hostname": "nsx-edge-02"
+          },
+          "form_factor": "MEDIUM",
+          "node_user_settings": {
+            "cli_username": "admin" ,
+            "root_password": "VMware1!VMware1!",
+            "cli_password": "VMware1!VMware1!",
+            "audit_username": "audit",
+            "audit_password": "VMware1!VMware1!"
+          }
+        },
+        "resource_type": "EdgeNode",
+        "display_name": "nsx-edge-02"
       }
     }
 
