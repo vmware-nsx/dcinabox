@@ -5,44 +5,33 @@
   # Accepts: 'present' to create; 'absent' to delete
   #
   "state": "present",
-
+  "mtu": "9000",
   #
-  # Common NSX Appliance variables
-  #
-  "nsx_username": "admin",
-  "nsx_password": "VMware1!VMware1!",
   "validate_certs": False,
   #
   #
   #
-  "cluster_name": "Cluster-02a",
-  "vds_name": "SiteA-vDS-02",
-  "mtu": "9000",
-  "uplink_vlan_id": "254",
-  "overlay_vlan_id": "130",
-  "management_vlan_id": "100",
-  "SNAT_IP": "192.168.254.6",
   #
   # First NSX appliance node. Defined separate based on the consumption.
   # Accepts both IP (IPv4) and FQDN for 'mgmt_ip'
   #
   "nsx_node1": {
-    "hostname": "nsxmgr-01a.corp.local",
-    "mgmt_ip": "192.168.110.15",
-    "datacenter": "Site-A",
+    "hostname": "{{management_network.nsx_manager_ip}}",
+    "mgmt_ip": "{{management_network.nsx_manager_ip}}",
+    "datacenter": "Site",
     "cluster": "Cluster-01a",
-    "datastore": "esx-02a-local",
-    "portgroup": "SiteA-vDS-01-Management"
+    "datastore": "esx-011a-local",
+    "portgroup": "SiteA-vDS-10-Management"
   },
 
   "compute_managers": [
     {
-      "display_name": "vcsa-01a",
-      "mgmt_ip": "192.168.110.22",
+      "display_name": "{{vcenter.fqdn}}",
+      "mgmt_ip": "{{vcenter.ip}}",
       "origin_type": "vCenter",
       "credential_type": "UsernamePasswordLoginCredential",
-      "username": "administrator@vsphere.local",
-      "password": "VMware1!",
+      "username": "{{vcenter.username}}",
+      "password": "{{vcenter.password}}",
     }
   ],
 
@@ -143,12 +132,11 @@
           "state": "{{state}}",
           "allocation_ranges": [
             {
-              "start": "192.168.130.51",
-              "end": "192.168.130.91"
+              "start": "{{tep_range.start}}",
+              "end": "{{tep_range.end}}"
             }
           ],
-          "gateway_ip": "192.168.130.1",
-          "cidr": "192.168.130.0/24"
+          "cidr": "{{tep_range.cidr}}"
         }
       ]
     }
@@ -179,7 +167,7 @@
         }
 
       ],
-      "transport_vlan": 130,
+      "transport_vlan": "{{overlay_vlan_id}}",
       "mtu": "{{mtu}}"
     }
   ],
@@ -234,7 +222,7 @@
           "policy": "FAILOVER_ORDER"
         }
       ],
-      "transport_vlan": 130,
+      "transport_vlan": "{{overlay_vlan_id}}",
     }
   ],
 
@@ -250,7 +238,7 @@
               "type": "UplinkHostSwitchProfile"
             }
           ],
-          "host_switch_name": "{{vds_name}}",
+          "host_switch_name": "{{vcenter.vds}}",
           "host_switch_mode": "STANDARD",
           "host_switch_type": "VDS",
           "uplinks": [
@@ -322,24 +310,24 @@
       "node_deployment_info": {
         "deployment_config": {
           "vm_deployment_config": {
-            "vc_name": "vcsa-01a",
-            "vc_username": "administrator@vsphere.local",
-            "vc_password": "VMware1!",
-            "compute": "Cluster-02a",
-            "storage": "nfs-02",
-            "host": "esx-03a.corp.local",
-            "management_network": "SiteA-vDS-02-Mgmt",
+            "vc_name": "{{vcenter.fqdn}}",
+            "vc_username": "{{vcenter.username}}",
+            "vc_password": "{{vcenter.password}}",
+            "compute": "{{vcenter.cluster}}",
+            "storage": "{{edge_nodes.edge1_datastore}}",
+            "host": "{{edge_nodes.edge1_host}}",
+            "management_network": "{{management_network.portgroup_name}}",
             "data_networks": [
               "DcInABox-Uplink-Trunk",
               "DcInABox-Overlay-Trunk",
             ],
             "management_port_subnets": [
               {
-                "ip_addresses": [ "192.168.110.19" ],
-                "prefix_length": 24
+                "ip_addresses": [ "{{management_network.edge01_ip}}" ],
+                "prefix_length": "{{management_network.prefix_length}}"
               }
             ],
-            "default_gateway_addresses": [ "192.168.110.1" ],
+            "default_gateway_addresses": [ "{{management_network.gateway_ip}}" ],
             "allow_ssh_root_login": true,
             "enable_ssh": true,
             "placement_type": "VsphereDeploymentConfig",
@@ -348,10 +336,10 @@
           "form_factor": "MEDIUM",
           "node_user_settings": {
             "cli_username": "admin" ,
-            "root_password": "VMware1!VMware1!",
-            "cli_password": "VMware1!VMware1!",
+            "root_password": "{{edge_nodes.password}}",
+            "cli_password": "{{edge_nodes.password}}",
             "audit_username": "audit",
-            "audit_password": "VMware1!VMware1!"
+            "audit_password": "{{edge_nodes.password}}"
           }
         },
         "resource_type": "EdgeNode",
@@ -398,24 +386,24 @@
       "node_deployment_info": {
         "deployment_config": {
           "vm_deployment_config": {
-            "vc_name": "vcsa-01a",
-            "vc_username": "administrator@vsphere.local",
-            "vc_password": "VMware1!",
-            "compute": "Cluster-02a",
-            "storage": "nfs-02",
-            "host": "esx-04a.corp.local",
-            "management_network": "SiteA-vDS-02-Mgmt",
+            "vc_name": "{{vcenter.fqdn}}",
+            "vc_username": "{{vcenter.username}}",
+            "vc_password": "{{vcenter.password}}",
+            "compute": "{{vcenter.cluster}}",
+            "storage": "{{edge_nodes.edge2_datastore}}",
+            "host": "{{edge_nodes.edge2_host}}",
+            "management_network": "{{management_network.portgroup_name}}",
             "data_networks": [
               "DcInABox-Uplink-Trunk",
               "DcInABox-Overlay-Trunk",
             ],
             "management_port_subnets": [
               {
-                "ip_addresses": [ "192.168.110.20" ],
-                "prefix_length": 24
+                "ip_addresses": [ "{{management_network.edge02_ip}}" ],
+                "prefix_length": "{{management_network.prefix_length}}"
               }
             ],
-            "default_gateway_addresses": [ "192.168.110.1" ],
+            "default_gateway_addresses": [ "{{management_network.gateway_ip}}" ],
             "allow_ssh_root_login": true,
             "enable_ssh": true,
             "placement_type": "VsphereDeploymentConfig",
@@ -424,13 +412,13 @@
           "form_factor": "MEDIUM",
           "node_user_settings": {
             "cli_username": "admin" ,
-            "root_password": "VMware1!VMware1!",
-            "cli_password": "VMware1!VMware1!",
+            "root_password": "{{edge_nodes.password}}",
+            "cli_password": "{{edge_nodes.password}}",
             "audit_username": "audit",
-            "audit_password": "VMware1!VMware1!"
+            "audit_password": "{{edge_nodes.password}}"
           }
         },
-        "resource_type": "EdgeNode",
+         "resource_type": "EdgeNode",
         "display_name": "nsx-edge-02"
       }
     }

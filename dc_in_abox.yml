@@ -4,12 +4,13 @@
   become: yes
   vars_files:
     - static_vars.yml
+    - user_defined_vars.yml
   tasks:
     - name: Register compute manager
       vmware.ansible_for_nsxt.nsxt_fabric_compute_managers:
           hostname: "{{ nsx_node1.hostname }}"
-          username: "{{ nsx_username }}"
-          password: "{{ nsx_password }}"
+          username: "{{ nsx.username }}"
+          password: "{{ nsx.password }}"
           validate_certs: "{{ validate_certs }}"
           display_name: "{{ item.display_name }}"
           server: "{{ item.mgmt_ip }}"
@@ -25,8 +26,8 @@
     - name: Create IP Pools
       vmware.ansible_for_nsxt.nsxt_policy_ip_pool:
         hostname: "{{ nsx_node1.mgmt_ip }}"
-        username: "{{ nsx_username }}"
-        password: "{{ nsx_password }}"
+        username: "{{ nsx.username }}"
+        password: "{{ nsx.password }}"
         validate_certs: "{{ validate_certs }}"
         display_name: "{{ item.display_name }}"
         pool_static_subnets: "{{ item.subnets }}"
@@ -37,8 +38,8 @@
     - name: Create edge uplink profile
       vmware.ansible_for_nsxt.nsxt_uplink_profiles:
         hostname: "{{ nsx_node1.mgmt_ip }}"
-        username: "{{ nsx_username }}"
-        password: "{{ nsx_password }}"
+        username: "{{ nsx.username }}"
+        password: "{{ nsx.password }}"
         validate_certs: "{{ validate_certs }}"
         resource_type: UplinkHostSwitchProfile
         display_name: "{{item.display_name}}"
@@ -53,8 +54,8 @@
     - name: Create host uplink profile
       vmware.ansible_for_nsxt.nsxt_uplink_profiles:
         hostname: "{{ nsx_node1.mgmt_ip }}"
-        username: "{{ nsx_username }}"
-        password: "{{ nsx_password }}"
+        username: "{{ nsx.username }}"
+        password: "{{ nsx.password }}"
         validate_certs: "{{ validate_certs }}"
         resource_type: UplinkHostSwitchProfile
         display_name: "{{item.display_name}}"
@@ -68,8 +69,8 @@
     - name: Create transport zone
       vmware.ansible_for_nsxt.nsxt_transport_zones:
         hostname: "{{ nsx_node1.mgmt_ip }}"
-        username: "{{ nsx_username }}"
-        password: "{{ nsx_password }}"
+        username: "{{ nsx.username }}"
+        password: "{{ nsx.password }}"
         validate_certs: "{{ validate_certs }}"
         resource_type: "TransportZone"
         display_name: "{{ item.display_name }}"
@@ -83,8 +84,8 @@
     - name: Create Transport Node Profiles
       vmware.ansible_for_nsxt.nsxt_transport_node_profiles:
         hostname: "{{ nsx_node1.mgmt_ip }}"
-        username: "{{ nsx_username }}"
-        password: "{{ nsx_password }}"
+        username: "{{ nsx.username }}"
+        password: "{{ nsx.password }}"
         validate_certs: "{{ validate_certs }}"
         resource_type: TransportNodeProfile
         display_name: "{{ item.display_name }}"
@@ -92,7 +93,6 @@
         host_switch_spec:
           resource_type: StandardHostSwitchSpec
           host_switches: "{{ item.host_switches }}"
-        #transport_zone_endpoints: "{{ item.transport_zone_endpoints }}"
         state: "{{ state }}"
       with_items:
         - "{{ transport_node_profiles }}"
@@ -100,22 +100,22 @@
     - name: Attach Transport node profile to collapsed cluster
       vmware.ansible_for_nsxt.nsxt_transport_node_collections:
         hostname: "{{ nsx_node1.mgmt_ip }}"
-        username: "{{ nsx_username }}"
-        password: "{{ nsx_password }}"
+        username: "{{ nsx.username }}"
+        password: "{{ nsx.password }}"
         validate_certs: "{{ validate_certs }}"
         display_name: "{{transport_node_profiles[0].display_name }}"
         resource_type: "TransportNodeCollection"
         description: "Transport Node Collections Hosts"
         compute_manager_name: "{{compute_managers[0].display_name}}"
-        cluster_name: "{{ cluster_name }}"
+        cluster_name: "{{ vcenter.cluster }}"
         transport_node_profile_name: "{{transport_node_profiles[0].display_name}}"
         state: present
 
     - name: Create VLAN Segmets
       vmware.ansible_for_nsxt.nsxt_policy_segment:
         hostname: "{{ nsx_node1.mgmt_ip }}"
-        username: "{{ nsx_username }}"
-        password: "{{ nsx_password }}"
+        username: "{{ nsx.username }}"
+        password: "{{ nsx.password }}"
         validate_certs: "{{ validate_certs }}"
         display_name: "{{ item.display_name }}"
         replication_mode: SOURCE
@@ -131,8 +131,8 @@
     - name: Create Edge Transport Nodes
       vmware.ansible_for_nsxt.nsxt_transport_nodes:
         hostname: "{{ nsx_node1.mgmt_ip }}"
-        username: "{{ nsx_username }}"
-        password: "{{ nsx_password }}"
+        username: "{{ nsx.username }}"
+        password: "{{ nsx.password }}"
         validate_certs: "{{ validate_certs }}"
         display_name: "{{ item.display_name }}"
         host_switch_spec:
@@ -146,8 +146,8 @@
     - name: Add edge cluster
       vmware.ansible_for_nsxt.nsxt_edge_clusters:
         hostname: "{{ nsx_node1.mgmt_ip }}"
-        username: "{{ nsx_username }}"
-        password: "{{ nsx_password }}"
+        username: "{{ nsx.username }}"
+        password: "{{ nsx.password }}"
         validate_certs: "{{ validate_certs }}"
         display_name: "{{ item.display_name }}"
         cluster_profile_bindings:
@@ -161,8 +161,8 @@
     - name: Create Edge VLAN Segmets
       vmware.ansible_for_nsxt.nsxt_policy_segment:
         hostname: "{{ nsx_node1.mgmt_ip }}"
-        username: "{{ nsx_username }}"
-        password: "{{ nsx_password }}"
+        username: "{{ nsx.username }}"
+        password: "{{ nsx.password }}"
         validate_certs: "{{ validate_certs }}"
         display_name: "{{ item.display_name }}"
         replication_mode: SOURCE
@@ -175,22 +175,24 @@
       with_items:
         - "{{ edge_segments }}"
 
+    - name: Pause for 5 minutes so that the edge cluster enforcement point is available (!!!DO NOT SKIP!!!)
+      pause:
+        minutes: 5
 
     - name: Create NSX Gateway
       vmware.ansible_for_nsxt.nsxt_policy_tier0:
         hostname: "{{ nsx_node1.mgmt_ip }}"
-        username: "{{ nsx_username }}"
-        password: "{{ nsx_password }}"
+        username: "{{ nsx.username }}"
+        password: "{{ nsx.password }}"
         validate_certs: "{{ validate_certs }}"
         display_name: "NSX-GATEWAY"
         ha_mode: "ACTIVE_STANDBY"
-        #failover_mode: "PREEMPTIVE"
         static_routes:
           - state: present
             display_name: default
             network: '0.0.0.0/0'
             next_hops:
-            - ip_address: "192.168.254.3"
+            - ip_address: "{{uplink_network.gateway_ip}}"
         locale_services:
           - state: "{{ state }}"
             id: "nsxgateway-localservices"
@@ -199,8 +201,8 @@
                 display_name: "uplink-eg1"
                 state: "{{ state }}"
                 subnets:
-                  - ip_addresses: ["192.168.254.1"]
-                    prefix_len: 24
+                  - ip_addresses: ["{{uplink_network.edge01_ip}}"]
+                    prefix_len: "{{uplink_network.prefix_length}}"
                 segment_id: "Edge-Uplink"
                 edge_node_info:
                   edge_node_display_name: "nsx-edge-01"
@@ -209,29 +211,32 @@
                 display_name: "uplink-eg2"
                 state: "{{ state }}"
                 subnets:
-                  - ip_addresses: ["192.168.254.2"]
-                    prefix_len: 24
+                  - ip_addresses: ["{{uplink_network.edge02_ip}}"]
+                    prefix_len: "{{uplink_network.prefix_length}}"
                 segment_id: "Edge-Uplink"
                 edge_node_info:
                   edge_node_display_name: "nsx-edge-02"
                   edge_cluster_display_name: "edge-cluster-01"
         state: "{{ state }}"
 
+    - name: Pause for 5 minutes so that the NSX Gateway is Realized (!!!DO NOT SKIP!!!)
+      pause:
+        minutes: 5
+
     - name: Add HA VIP and Service Interface to NSX Gateway
       vmware.ansible_for_nsxt.nsxt_policy_tier0:
         hostname: "{{ nsx_node1.mgmt_ip }}"
-        username: "{{ nsx_username }}"
-        password: "{{ nsx_password }}"
+        username: "{{ nsx.username }}"
+        password: "{{ nsx.password }}"
         validate_certs: "{{ validate_certs }}"
         display_name: "NSX-GATEWAY"
         ha_mode: "ACTIVE_STANDBY"
-        #failover_mode: "PREEMPTIVE"
         static_routes:
           - state: "{{ state }}"
             display_name: default
             network: '0.0.0.0/0'
             next_hops:
-            - ip_address: "192.168.254.3"
+            - ip_address: "{{uplink_network.gateway_ip}}"
         locale_services:
           - state: "{{ state }}"
             id: "nsxgateway-localservices"
@@ -240,8 +245,8 @@
                 display_name: "uplink-eg1"
                 state: "{{ state }}"
                 subnets:
-                  - ip_addresses: ["192.168.254.1"]
-                    prefix_len: 24
+                  - ip_addresses: ["{{uplink_network.edge01_ip}}"]
+                    prefix_len: "{{uplink_network.prefix_length}}"
                 segment_id: "Edge-Uplink"
                 edge_node_info:
                   edge_node_display_name: "nsx-edge-01"
@@ -250,8 +255,8 @@
                 display_name: "uplink-eg2"
                 state: "{{ state }}"
                 subnets:
-                  - ip_addresses: ["192.168.254.2"]
-                    prefix_len: 24
+                  - ip_addresses: ["{{uplink_network.edge02_ip}}"]
+                    prefix_len: "{{uplink_network.prefix_length}}"
                 segment_id: "Edge-Uplink"
                 edge_node_info:
                   edge_node_display_name: "nsx-edge-02"
@@ -261,8 +266,8 @@
                 state: "{{ state }}"
                 type: "SERVICE"
                 subnets:
-                  - ip_addresses: ["192.168.100.1"]
-                    prefix_len: 24
+                  - ip_addresses: ["{{management_network.nsxgateway_serviceinterface_ip}}"]
+                    prefix_len: "{{management_network.prefix_length}}"
                 segment_id: "Edge-Infra"
                 edge_node_info:
                   edge_node_display_name: "nsx-edge-01"
@@ -274,21 +279,21 @@
                   - id: "uplink-eg2"
                 vip_subnets:
                   - ip_addresses:
-                    - "192.168.254.5"
-                    prefix_len: 24
+                    - "{{uplink_network.vip_ip}}"
+                    prefix_len: "{{uplink_network. prefix_length}}"
         state: "{{ state }}"
 
     - name: Configure SNAT Rule on NSX Gateway
       uri:
         method: PATCH
         url: https://{{ nsx_node1.mgmt_ip }}/policy/api/v1/infra/tier-0s/NSX-GATEWAY/nat/USER/nat-rules/SNAT
-        user: "{{ nsx_username }}"
-        password: "{{ nsx_password }}"
+        user: "{{ nsx.username }}"
+        password: "{{ nsx.password }}"
         body:
           display_name: Global SNAT
           description: SNAT any outbound traffic
           action: SNAT
-          translated_network: "{{SNAT_IP}}"
+          translated_network: "{{uplink_network.snat_ip}}"
           sequence_number: 1000
           scope:
           - /infra/tier-0s/NSX-GATEWAY/locale-services/nsxgateway-localservices/interfaces/uplink-eg1
@@ -303,8 +308,8 @@
     - name: Create Overlay Segmets
       vmware.ansible_for_nsxt.nsxt_policy_segment:
         hostname: "{{ nsx_node1.mgmt_ip }}"
-        username: "{{ nsx_username }}"
-        password: "{{ nsx_password }}"
+        username: "{{ nsx.username }}"
+        password: "{{ nsx.password }}"
         validate_certs: "{{ validate_certs }}"
         display_name: "{{ item.display_name }}"
         replication_mode: SOURCE
@@ -320,8 +325,8 @@
     - name: Create RDP-REMOTE-ACCESS Security Group
       vmware.ansible_for_nsxt.nsxt_policy_group:
         hostname: "{{ nsx_node1.mgmt_ip }}"
-        username: "{{ nsx_username }}"
-        password: "{{ nsx_password }}"
+        username: "{{ nsx.username }}"
+        password: "{{ nsx.password }}"
         validate_certs: "{{ validate_certs }}"
         display_name: RDP-REMOTE-ACCESS
         state: "{{ state }}"
@@ -336,8 +341,8 @@
     - name: Create SSH-REMOTE-ACCESS Security Group
       vmware.ansible_for_nsxt.nsxt_policy_group:
         hostname: "{{ nsx_node1.mgmt_ip }}"
-        username: "{{ nsx_username }}"
-        password: "{{ nsx_password }}"
+        username: "{{ nsx.username }}"
+        password: "{{ nsx.password }}"
         validate_certs: "{{ validate_certs }}"
         display_name: SSH-REMOTE-ACCESS
         state: "present"
@@ -352,8 +357,8 @@
     - name: Create INTERNAL Security Group
       vmware.ansible_for_nsxt.nsxt_policy_group:
         hostname: "{{ nsx_node1.mgmt_ip }}"
-        username: "{{ nsx_username }}"
-        password: "{{ nsx_password }}"
+        username: "{{ nsx.username }}"
+        password: "{{ nsx.password }}"
         validate_certs: "{{ validate_certs }}"
         display_name: INTERNAL
         state: "present"
@@ -368,8 +373,8 @@
     - name: Create DMZ Security Group
       vmware.ansible_for_nsxt.nsxt_policy_group:
         hostname: "{{ nsx_node1.mgmt_ip }}"
-        username: "{{ nsx_username }}"
-        password: "{{ nsx_password }}"
+        username: "{{ nsx.username }}"
+        password: "{{ nsx.password }}"
         validate_certs: "{{ validate_certs }}"
         display_name: DMZ
         state: "present"
@@ -384,8 +389,8 @@
     - name: Create DMZ Policy Isolation (DFW)
       vmware.ansible_for_nsxt.nsxt_policy_security_policy:
         hostname: "{{ nsx_node1.mgmt_ip }}"
-        username: "{{ nsx_username }}"
-        password: "{{ nsx_password }}"
+        username: "{{ nsx.username }}"
+        password: "{{ nsx.password }}"
         validate_certs: "{{ validate_certs }}"
         display_name: "DMZ-ISOLATION"
         id: "DMZ-ISOLATION"
@@ -414,8 +419,8 @@
     - name: Create Gateway Firewall Inbound Policy
       vmware.ansible_for_nsxt.nsxt_policy_gateway_policy:
         hostname: "{{ nsx_node1.mgmt_ip }}"
-        username: "{{ nsx_username }}"
-        password: "{{ nsx_password }}"
+        username: "{{ nsx.username }}"
+        password: "{{ nsx.password }}"
         validate_certs: "{{ validate_certs }}"
         display_name: "InboundPolicy"
         id: "InboundPolicy"
@@ -465,8 +470,8 @@
     - name: Create Gateway Firewall Outbound Policy
       vmware.ansible_for_nsxt.nsxt_policy_gateway_policy:
         hostname: "{{ nsx_node1.mgmt_ip }}"
-        username: "{{ nsx_username }}"
-        password: "{{ nsx_password }}"
+        username: "{{ nsx.username }}"
+        password: "{{ nsx.password }}"
         validate_certs: "{{ validate_certs }}"
         display_name: "OutboundPolicy"
         id: "OutboundPolicy"
@@ -490,8 +495,8 @@
     - name: Create Gateway Firewall Policy For Infrastructure Access
       vmware.ansible_for_nsxt.nsxt_policy_gateway_policy:
         hostname: "{{ nsx_node1.mgmt_ip }}"
-        username: "{{ nsx_username }}"
-        password: "{{ nsx_password }}"
+        username: "{{ nsx.username }}"
+        password: "{{ nsx.password }}"
         validate_certs: "{{ validate_certs }}"
         display_name: "InfrastructureAccess"
         id: "InfrastructureAccess"
