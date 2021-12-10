@@ -192,12 +192,12 @@
             next_hops:
             - ip_address: "192.168.254.3"
         locale_services:
-          - state: present
+          - state: "{{ state }}"
             id: "nsxgateway-localservices"
             interfaces:
               - id: "uplink-eg1"
                 display_name: "uplink-eg1"
-                state: present
+                state: "{{ state }}"
                 subnets:
                   - ip_addresses: ["192.168.254.1"]
                     prefix_len: 24
@@ -207,7 +207,7 @@
                   edge_cluster_display_name: "edge-cluster-01"
               - id: "uplink-eg2"
                 display_name: "uplink-eg2"
-                state: present
+                state: "{{ state }}"
                 subnets:
                   - ip_addresses: ["192.168.254.2"]
                     prefix_len: 24
@@ -215,7 +215,7 @@
                 edge_node_info:
                   edge_node_display_name: "nsx-edge-02"
                   edge_cluster_display_name: "edge-cluster-01"
-        state: present
+        state: "{{ state }}"
 
     - name: Add HA VIP and Service Interface to NSX Gateway
       vmware.ansible_for_nsxt.nsxt_policy_tier0:
@@ -227,18 +227,18 @@
         ha_mode: "ACTIVE_STANDBY"
         #failover_mode: "PREEMPTIVE"
         static_routes:
-          - state: present
+          - state: "{{ state }}"
             display_name: default
             network: '0.0.0.0/0'
             next_hops:
             - ip_address: "192.168.254.3"
         locale_services:
-          - state: present
+          - state: "{{ state }}"
             id: "nsxgateway-localservices"
             interfaces:
               - id: "uplink-eg1"
                 display_name: "uplink-eg1"
-                state: present
+                state: "{{ state }}"
                 subnets:
                   - ip_addresses: ["192.168.254.1"]
                     prefix_len: 24
@@ -248,7 +248,7 @@
                   edge_cluster_display_name: "edge-cluster-01"
               - id: "uplink-eg2"
                 display_name: "uplink-eg2"
-                state: present
+                state: "{{ state }}"
                 subnets:
                   - ip_addresses: ["192.168.254.2"]
                     prefix_len: 24
@@ -258,7 +258,7 @@
                   edge_cluster_display_name: "edge-cluster-01"
               - id: "sp-infra-01"
                 display_name: "sp-infra-01"
-                state: present
+                state: "{{ state }}"
                 type: "SERVICE"
                 subnets:
                   - ip_addresses: ["192.168.100.1"]
@@ -276,7 +276,7 @@
                   - ip_addresses:
                     - "192.168.254.5"
                     prefix_len: 24
-        state: present
+        state: "{{ state }}"
 
     - name: Configure SNAT Rule on NSX Gateway
       uri:
@@ -324,7 +324,7 @@
         password: "{{ nsx_password }}"
         validate_certs: "{{ validate_certs }}"
         display_name: RDP-REMOTE-ACCESS
-        state: "present"
+        state: "{{ state }}"
         domain_id: "default"
         expression:
           - member_type: "VirtualMachine"
@@ -381,4 +381,144 @@
             operator: "EQUALS"
             resource_type: "Condition"
 
+    - name: Create DMZ Policy Isolation (DFW)
+      vmware.ansible_for_nsxt.nsxt_policy_security_policy:
+        hostname: "{{ nsx_node1.mgmt_ip }}"
+        username: "{{ nsx_username }}"
+        password: "{{ nsx_password }}"
+        validate_certs: "{{ validate_certs }}"
+        display_name: "DMZ-ISOLATION"
+        id: "DMZ-ISOLATION"
+        state: "present"
+        domain_id: "default"
+        scope:
+        - "/infra/domains/default/groups/DMZ"
+        rules:
+        - action: "DROP"
+          sequence_number: 1
+          display_name: "BlockDMZToInternal"
+          id: "BlockDMZToInternal"
+          source_groups: ["/infra/domains/default/groups/DMZ"]
+          destination_groups: ["/infra/domains/default/groups/INTERNAL"]
+          services: "ANY"
+          logged: True
+        - action: "DROP"
+          sequence_number: 2
+          display_name: "BlockFromDMZtoDMZ"
+          id: "BlockFromDMZtoDMZ"
+          source_groups: ["/infra/domains/default/groups/DMZ"]
+          destination_groups: ["/infra/domains/default/groups/DMZ"]
+          services: "ANY"
+          logged: True
 
+    - name: Create Gateway Firewall Inbound Policy
+      vmware.ansible_for_nsxt.nsxt_policy_gateway_policy:
+        hostname: "{{ nsx_node1.mgmt_ip }}"
+        username: "{{ nsx_username }}"
+        password: "{{ nsx_password }}"
+        validate_certs: "{{ validate_certs }}"
+        display_name: "InboundPolicy"
+        id: "InboundPolicy"
+        state: "present"
+        sequence_number: 100
+        rules:
+          - action: "ALLOW"
+            sequence_number: 1
+            display_name: "RDPAccess"
+            id: "RDPAccess"
+            source_groups: ANY
+            destination_groups: ["/infra/domains/default/groups/RDP-REMOTE-ACCESS"]
+            services: ["/infra/services/RDP"]
+            logged: False
+            ip_protocol: IPV4_IPV6
+            direction: IN
+            scope:
+            - /infra/tier-0s/NSX-GATEWAY/locale-services/nsxgateway-localservices/interfaces/uplink-eg1
+            - /infra/tier-0s/NSX-GATEWAY/locale-services/nsxgateway-localservices/interfaces/uplink-eg2 
+          - action: "ALLOW"
+            sequence_number: 1
+            display_name: "SSHAccess"
+            id: "SSHAccess"
+            source_groups: ANY
+            destination_groups: ["/infra/domains/default/groups/SSH-REMOTE-ACCESS"]
+            services: ["/infra/services/SSH"]
+            logged: False
+            ip_protocol: IPV4_IPV6
+            direction: IN
+            scope:
+            - /infra/tier-0s/NSX-GATEWAY/locale-services/nsxgateway-localservices/interfaces/uplink-eg1
+            - /infra/tier-0s/NSX-GATEWAY/locale-services/nsxgateway-localservices/interfaces/uplink-eg2
+          - action: "DROP"
+            sequence_number: 1
+            display_name: "DenyInboundAll"
+            id: "DenyInboundAll"
+            source_groups: ANY
+            destination_groups: ANY
+            services: ANY
+            logged: True
+            ip_protocol: IPV4_IPV6
+            direction: IN
+            scope:
+            - /infra/tier-0s/NSX-GATEWAY/locale-services/nsxgateway-localservices/interfaces/uplink-eg1
+            - /infra/tier-0s/NSX-GATEWAY/locale-services/nsxgateway-localservices/interfaces/uplink-eg2
+
+    - name: Create Gateway Firewall Outbound Policy
+      vmware.ansible_for_nsxt.nsxt_policy_gateway_policy:
+        hostname: "{{ nsx_node1.mgmt_ip }}"
+        username: "{{ nsx_username }}"
+        password: "{{ nsx_password }}"
+        validate_certs: "{{ validate_certs }}"
+        display_name: "OutboundPolicy"
+        id: "OutboundPolicy"
+        state: "present"
+        sequence_number: 200
+        rules:
+          - action: "ALLOW"
+            sequence_number: 1
+            display_name: "AllowOutboundAll"
+            id: "AllowOutboundAll"
+            source_groups: ANY
+            destination_groups: ANY
+            services: ANY
+            logged: True
+            ip_protocol: IPV4_IPV6
+            direction: OUT
+            scope:
+            - /infra/tier-0s/NSX-GATEWAY/locale-services/nsxgateway-localservices/interfaces/uplink-eg1
+            - /infra/tier-0s/NSX-GATEWAY/locale-services/nsxgateway-localservices/interfaces/uplink-eg2
+
+    - name: Create Gateway Firewall Policy For Infrastructure Access
+      vmware.ansible_for_nsxt.nsxt_policy_gateway_policy:
+        hostname: "{{ nsx_node1.mgmt_ip }}"
+        username: "{{ nsx_username }}"
+        password: "{{ nsx_password }}"
+        validate_certs: "{{ validate_certs }}"
+        display_name: "InfrastructureAccess"
+        id: "InfrastructureAccess"
+        state: "present"
+        sequence_number: 300
+        rules:
+          - action: "ALLOW"
+            sequence_number: 1
+            display_name: "AllowFromInternalToInfra"
+            id: "AllowFromInternalToInfra"
+            source_groups: ["/infra/domains/default/groups/INTERNAL"]
+            destination_groups: ANY
+            services: ANY
+            logged: True
+            ip_protocol: IPV4_IPV6
+            direction: OUT
+            scope:
+            - /infra/tier-0s/NSX-GATEWAY/locale-services/nsxgateway-localservices/interfaces/sp-infra-01
+          - action: "ALLOW"
+            sequence_number: 2
+            display_name: "DenyAllFromToInfra"
+            id: "DenyAllFromToInfra"
+            source_groups: ANY
+            destination_groups: ANY
+            services: ANY
+            logged: True
+            ip_protocol: IPV4_IPV6
+            direction: IN_OUT
+            scope:
+            - /infra/tier-0s/NSX-GATEWAY/locale-services/nsxgateway-localservices/interfaces/sp-infra-01
