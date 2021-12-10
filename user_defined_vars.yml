@@ -1,0 +1,44 @@
+vcenter:
+  fqdn: vcsa-01a.corp.local
+  ip: 192.168.110.22
+  username: administrator@vsphere.local
+  password: VMware1!
+  cluster: Cluster-02a
+  vds: SiteA-vDS-02
+
+nsx:
+  username: admin
+  password: VMware1!VMware1!
+
+uplink_vlan_id: '254'
+overlay_vlan_id: '130'
+management_vlan_id: '100'
+
+uplink_network:
+  snat_ip: 192.168.254.6
+  vip_ip: 192.168.254.5
+  edge01_ip: 192.168.254.1
+  edge02_ip: 192.168.254.2
+  gateway_ip: 192.168.254.3
+  prefix_length: 24
+
+management_network:
+  prefix_length: 24
+  gateway_ip: 192.168.110.1
+  nsx_manager_ip: 192.168.110.15
+  edge01_ip: 192.168.110.19
+  edge02_ip: 192.168.110.20
+  portgroup_name: SiteA-vDS-02-Mgmt
+  nsxgateway_serviceinterface_ip: 192.168.100.1
+
+tep_range:
+  start: 192.168.130.51
+  end: 192.168.130.91
+  cidr: 192.168.130.0/24
+
+edge_nodes:
+  edge1_datastore: nfs-02
+  edge1_host: esx-03a.corp.local
+  edge2_datastore: nfs-02
+  edge2_host: esx-04a.corp.local
+  password: VMware1!VMware1!
