@@ -510,7 +510,7 @@
             direction: OUT
             scope:
             - /infra/tier-0s/NSX-GATEWAY/locale-services/nsxgateway-localservices/interfaces/sp-infra-01
-          - action: "ALLOW"
+          - action: "DROP"
             sequence_number: 2
             display_name: "DenyAllFromToInfra"
             id: "DenyAllFromToInfra"
