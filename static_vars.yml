@@ -21,6 +21,7 @@
   "uplink_vlan_id": "254",
   "overlay_vlan_id": "130",
   "management_vlan_id": "100",
+  "SNAT_IP": "192.168.254.6",
   #
   # First NSX appliance node. Defined separate based on the consumption.
   # Accepts both IP (IPv4) and FQDN for 'mgmt_ip'
@@ -82,6 +83,56 @@
       "vlan_ids": "{{overlay_vlan_id}},{{management_vlan_id}}"
     }
   ],
+
+
+  "edge_segments": [
+    { "display_name": "Edge-Uplink",
+      "transport_zone_name": "VLAN-EDGE-TZ",
+      "uplink_teaming_policy_name" : "uplink-1-only",
+      "vlan_ids": "{{uplink_vlan_id}}"
+    },
+    { "display_name": "Edge-Infra",
+      "transport_zone_name": "VLAN-EDGE-TZ",
+      "uplink_teaming_policy_name" : "uplink-1-only",
+      "vlan_ids": "{{management_vlan_id}}"
+    }
+  ],
+
+  "overlay_segments": [
+    {
+      "display_name": "INTERNAL",
+      "transport_zone_name": "OVERLAY-TZ",
+      "connectivity_path": "/infra/tier-0s/NSX-GATEWAY",
+      "subnets": [
+        {
+          "gateway_address": "172.16.20.1/24"
+        }
+      ],
+      "tags": [
+        {
+            "scope": "zone",
+            "tag": "internal"
+        }
+    ]
+    },
+    {
+      "display_name": "DMZ",
+      "transport_zone_name": "OVERLAY-TZ",
+      "connectivity_path": "/infra/tier-0s/NSX-GATEWAY",
+      "subnets": [
+        {
+          "gateway_address": "172.16.10.1/24"
+        }
+      ],
+      "tags": [
+        {
+            "scope": "zone",
+            "tag": "dmz"
+        }
+    ]
+    }
+  ],
+
 
   "ip_pools": [
     {
