@@ -132,9 +132,9 @@
       with_items:
         - "{{ segments }}"
 
-    - name: Pause for 1 minute so that VLAN Segments are Ready (!!!DO NOT SKIP!!!)
+    - name: Pause for 5 minutes so that VLAN Segments are Ready (!!!DO NOT SKIP!!!)
       pause:
-        minutes: 1
+        minutes: 5
 
     - name: Create Edge Transport Nodes
       vmware.ansible_for_nsxt.nsxt_transport_nodes:
