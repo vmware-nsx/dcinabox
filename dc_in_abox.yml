@@ -223,7 +223,58 @@
       pause:
         minutes: 5
 
-    - name: Add HA VIP and Service Interface to NSX Gateway
+    - name: Add HA VIP to NSX Gateway
+      vmware.ansible_for_nsxt.nsxt_policy_tier0:
+        hostname: "{{ nsx_node1.mgmt_ip }}"
+        username: "{{ nsx.username }}"
+        password: "{{ nsx.password }}"
+        validate_certs: "{{ validate_certs }}"
+        display_name: "NSX-GATEWAY"
+        ha_mode: "ACTIVE_STANDBY"
+        static_routes:
+          - state: "{{ state }}"
+            display_name: default
+            network: '0.0.0.0/0'
+            next_hops:
+            - ip_address: "{{uplink_network.gateway_ip}}"
+        locale_services:
+          - state: "{{ state }}"
+            id: "nsxgateway-localservices"
+            interfaces:
+              - id: "uplink-eg1"
+                display_name: "uplink-eg1"
+                state: "{{ state }}"
+                subnets:
+                  - ip_addresses: ["{{uplink_network.edge01_ip}}"]
+                    prefix_len: "{{uplink_network.prefix_length}}"
+                segment_id: "Edge-Uplink"
+                edge_node_info:
+                  edge_node_display_name: "nsx-edge-01"
+                  edge_cluster_display_name: "edge-cluster-01"
+              - id: "uplink-eg2"
+                display_name: "uplink-eg2"
+                state: "{{ state }}"
+                subnets:
+                  - ip_addresses: ["{{uplink_network.edge02_ip}}"]
+                    prefix_len: "{{uplink_network.prefix_length}}"
+                segment_id: "Edge-Uplink"
+                edge_node_info:
+                  edge_node_display_name: "nsx-edge-02"
+                  edge_cluster_display_name: "edge-cluster-01"
+            ha_vip_configs:
+              - enabled: true
+                external_interface_info:
+                  - id: "uplink-eg1"
+                  - id: "uplink-eg2"
+                vip_subnets:
+                  - ip_addresses:
+                    - "{{uplink_network.vip_ip}}"
+                    prefix_len: "{{uplink_network. prefix_length}}"
+        state: "{{ state }}"
+
+
+    - name: Add Service Interface to NSX Gateway
+      when: management_network.nsxgateway_serviceinterface_present
       vmware.ansible_for_nsxt.nsxt_policy_tier0:
         hostname: "{{ nsx_node1.mgmt_ip }}"
         username: "{{ nsx.username }}"
@@ -282,6 +333,7 @@
                     - "{{uplink_network.vip_ip}}"
                     prefix_len: "{{uplink_network. prefix_length}}"
         state: "{{ state }}"
+
 
     - name: Configure SNAT Rule on NSX Gateway
       uri:
@@ -493,6 +545,7 @@
             - /infra/tier-0s/NSX-GATEWAY/locale-services/nsxgateway-localservices/interfaces/uplink-eg2
 
     - name: Create Gateway Firewall Policy For Infrastructure Access
+      when: management_network.nsxgateway_serviceinterface_present
       vmware.ansible_for_nsxt.nsxt_policy_gateway_policy:
         hostname: "{{ nsx_node1.mgmt_ip }}"
         username: "{{ nsx.username }}"

@@ -1,3 +1,4 @@
+#This section cover the existing vCenter deployment.
 vcenter:
   fqdn: vcsa-01a.corp.local
   ip: 192.168.110.22
@@ -6,14 +7,20 @@ vcenter:
   cluster: Cluster-02a
   vds: SiteA-vDS-02
 
+#The NSX Manager appliace must be deployed from OVA already before running the playbook, you need to provide the credentials set during the deplyment process  
 nsx:
   username: admin
   password: VMware1!VMware1!
 
+#In this section provide the VLAN ID for the 3 networks.
+#The uplink VLAN represent the transit network between the physical switches and the NSX Gateway
+#The overlay network represents the network where the TEP interfaces reside
+#The management network host the management appliances. i.e., vCenter, NSX Manager, Edge Nodes Management Interfaces....
 uplink_vlan_id: '254'
 overlay_vlan_id: '130'
 management_vlan_id: '100'
 
+#In this section provide the details about the uplink network. The uplink network must be a /28 as a minimum.
 uplink_network:
   snat_ip: 192.168.254.6
   vip_ip: 192.168.254.5
@@ -22,6 +29,7 @@ uplink_network:
   gateway_ip: 192.168.254.3
   prefix_length: 24
 
+#In this section provid the details about the mananagement network.
 management_network:
   prefix_length: 24
   gateway_ip: 192.168.110.1
@@ -29,13 +37,16 @@ management_network:
   edge01_ip: 192.168.110.19
   edge02_ip: 192.168.110.20
   portgroup_name: SiteA-vDS-02-Mgmt
-  nsxgateway_serviceinterface_ip: 192.168.100.1
+  nsxgateway_serviceinterface_present: False #When connecting the DC in a Box to an Untrusted external network (i.e., the Internet set this to True)
+  nsxgateway_serviceinterface_ip: 192.168.100.1 #An IP for the service interface on the management network is only required if "nsxgateway_serviceinterface_present" is set to "True"
 
+#provide IP Range for the allocation of the TEP interfaces IP
 tep_range:
   start: 192.168.130.51
   end: 192.168.130.91
   cidr: 192.168.130.0/24
 
+#Provide Edge Node VMs deployment information
 edge_nodes:
   edge1_datastore: nfs-02
   edge1_host: esx-03a.corp.local
