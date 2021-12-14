@@ -81,6 +81,10 @@
       with_items:
         - "{{ transport_zones }}"
 
+    - name: Pause for 5 minutes so that TZ are available (!!!DO NOT SKIP!!!)
+      pause:
+        minutes: 5
+
     - name: Create Transport Node Profiles
       vmware.ansible_for_nsxt.nsxt_transport_node_profiles:
         hostname: "{{ nsx_node1.mgmt_ip }}"
