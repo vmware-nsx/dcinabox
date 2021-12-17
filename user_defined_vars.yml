@@ -4,6 +4,7 @@ vcenter:
   ip: 192.168.110.22
   username: administrator@vsphere.local
   password: VMware1!
+  datacenter: Site-A
   cluster: Cluster-02a
   vds: SiteA-vDS-02
 
@@ -11,6 +12,14 @@ vcenter:
 nsx:
   username: admin
   password: VMware1!VMware1!
+  folder: VM
+  datacenter: Site-A
+  datastore: nfs-02
+  dns_server: 192.168.110.10
+  dns_domain: corp.local
+  ntp_server: 192.168.110.10
+  ova_file: nsx-unified-appliance-3.1.3.3.0.18844962.ova
+
 
 #In this section provide the VLAN ID for the 3 networks.
 #The uplink VLAN represent the transit network between the physical switches and the NSX Gateway
@@ -28,6 +37,7 @@ uplink_network:
   edge02_ip: 192.168.254.2
   gateway_ip: 192.168.254.3
   prefix_length: 24
+  netmask: 255.255.255.0
 
 #In this section provid the details about the mananagement network.
 management_network:
