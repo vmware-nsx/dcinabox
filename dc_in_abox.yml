@@ -50,7 +50,8 @@
         status_code: 200
       register: result
       until: result.status == 200 and result.json.detailed_cluster_status.overall_status == "STABLE"
-      retries: 60delay: 60
+      retries: 60
+      delay: 60
 
     - name: Add license
       vmware.ansible_for_nsxt.nsxt_licenses:
