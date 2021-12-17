@@ -16,7 +16,7 @@ You need to download the NSX OVA file to the system where you run docker. Take a
 Run the container via this command:
 ```
 docker run -v /home/luca/Downloads/:/ova -it  lcamarda/ansible-for-nsxt-v3.1:v1.1
-
+```
 You need to enter the path to the OVA file folder, in my case: /home/luca/Downloads/. That folder and its content will be presented to the container in /ova
 
 ### Step 3 - Customize the user_defined_vars.yml file
