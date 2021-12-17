@@ -10,7 +10,7 @@ ___
 2)	Customize the user_defined_vars.yml file based on your environment
 3)	Run the Ansible Playbook
 
-## Step 1 - Run the docker container
+### Step 1 - Run the docker container
 You need to download the NSX OVA file to the system where you run docker. Take a note of the absolute path of the directory where the OVA file is located.
 
 Run the container via this command:
@@ -104,7 +104,7 @@ edge_nodes:
 ```
 Save and close the file (:wq!)
 
-## 4 Run the Playbook
+### 4 Run the Playbook
 Run the following command, in around 30-40 minutes the DC in a Box will be ready for consumption
 ```
 root@45b44791e585:/dcinabox# ansible-playbook dc_in_abox.yml
