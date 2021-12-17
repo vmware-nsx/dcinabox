@@ -9,6 +9,61 @@
     - name: deploy NSX Manager OVA
       vmware.ansible_for_nsxt.nsxt_deploy_ova:
         ovftool_path: "/usr/bin"
+        #folder: "{{nsx.folder}}"
+        datacenter: "{{vcenter.datacenter}}"
+        datastore: "{{nsx.datastore}}"
+        portgroup: "{{management_network.portgroup_name}}"
+        cluster: "{{vcenter.cluster}}"
+        vmname: "nsxt-manager-01"
+        hostname: "nsxt-manager-01"
+        dns_server: "{{nsx.dns_server}}"
+        ntp_server: "{{nsx.ntp_server}}"
+        dns_domain: "{{nsx.dns_domain}}"
+        gateway: "{{management_network.gateway_ip}}"
+        ip_address: "{{management_network.nsx_manager_ip}}"
+        netmask: "{{management_network.netmask}}"
+        admin_password: "{{nsx.password}}"
+        cli_password: "{{nsx.password}}"
+        path_to_ova: "/ova"
+        ova_file: "{{nsx.ova_file}}"
+        vcenter: "{{vcenter.ip}}"
+        vcenter_user: "{{vcenter.username}}"
+        vcenter_passwd: "{{vcenter.password}}"
+        deployment_size: "medium"
+        role: "NSX Manager"
+
+    - name: Pause for 10 minutes so that NSX Manager is available
+      pause:
+        minutes: 10
+
+    - name: Wait until the NSX-T API reports that the NSX-T Manager cluster is "STABLE"
+      uri:
+        url: https://{{management_network.nsx_manager_ip}}/api/v1/cluster/status
+        validate_certs: no
+        timeout: 5
+        force_basic_auth: yes
+        url_username: "{{nsx.username }}"
+        url_password: "{{nsx.password }}"
+        method: GET
+        body_format: json
+        return_content: yes
+        status_code: 200
+      register: result
+      until: result.status == 200 and result.json.detailed_cluster_status.overall_status == "STABLE"
+      retries: 60delay: 60
+
+    - name: Add license
+      vmware.ansible_for_nsxt.nsxt_licenses:
+        hostname: "{{ nsx_node1.hostname }}"
+        username: "{{ nsx.username }}"
+        password: "{{ nsx.password }}"
+        validate_certs: False
+        license_key: "{{nsx.license}}"
+        state: "present"
+        
+    - name: deploy NSX Manager OVA
+      vmware.ansible_for_nsxt.nsxt_deploy_ova:
+        ovftool_path: "/usr/bin"
         folder: "{{nsx.folder}}"
         datacenter: "{{vc.datacenter}}"
         datastore: "{{nsx.datastore}}"
