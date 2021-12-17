@@ -98,7 +98,7 @@ edge_nodes:
 ```
 Save and close the file (:wq!)
 
-## 4 Run the Playbook
+### 4 Run the Playbook
 Run the following command, in around 20-30 minutes the DC in a Box will be ready for consumption
 ```
 root@45b44791e585:/dcinabox# ansible-playbook dc_in_abox.yml
