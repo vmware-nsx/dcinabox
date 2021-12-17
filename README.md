@@ -1,29 +1,26 @@
 # dcinabox
-This repository provides an Ansible playbook to automate the deployment of the Datacenter in a Box solution described in the NSX-T Simplified Reference Architecture Document. Running the playbook requires a machine with Ansible, the [VMware supported NSX-T Ansible modules](https://github.com/vmware/ansible-for-nsxt) installed via an Ansible Galaxy, the python package pyVmomi, a text editor, and the git CLI tool. 
+This repository provides an Ansible playbook to automate the deployment of the Datacenter in a Box solution described in the NSX-T Simplified Reference Architecture Document. Running the playbook requires a machine with Ansible, the [VMware supported NSX-T Ansible modules](https://github.com/vmware/ansible-for-nsxt) installed via an Ansible Galaxy, the python package pyVmomi, the VMware ovftool, a text editor, and the git CLI tool. 
 
 To make satisfying those requirements easier, we prepared a docker image that incorporates all the required components. The only requirement on the end user machine is to have docker installed and active.  Please follow the instructions specific to your operating system to install docker.
 
 ___
 
 ## DC in a Box deployment steps
-1)	Deploy the NSX Manager OVA via the vSphere Client
-2)	Check that the NSX Manager GUI is accessible and install the license
-3)	Customize the user_defined_vars.yml file based on your environment
-4)	Run the Ansible Playbook
+1)	Run the container packaging all the required software and mount the NSX OVA Image locally
+2)	Customize the user_defined_vars.yml file based on your environment
+3)	Run the Ansible Playbook
 
-Steps 1 and 2 should be straightforward. If required, you can consult the documentation here:
+## Step 1 - Run the docker container
+You need to download the NSX OVA file to the system where you run docker. Take a note of the absolute path of the directory where the OVA file is located.
 
-[NSX Manager Installation Guide](https://docs.vmware.com/en/VMware-NSX-T-Data-Center/3.1/installation/GUID-FA0ABBBD-34D8-4DA9-882D-085E7E0D269E.html)
+Run the container via this command:
+```
+docker run -v /home/luca/Downloads/:/ova -it  lcamarda/ansible-for-nsxt-v3.1:v1.1
 
-[Add an NSX License Key](https://docs.vmware.com/en/VMware-NSX-T-Data-Center/3.1/administration/GUID-8E665EAC-A44D-4FB3-B661-E00C467B2ED5.html#GUID-8E665EAC-A44D-4FB3-B661-E00C467B2ED5)
+You need to enter the path to the OVA file folder, in my case: /home/luca/Downloads/. That folder and its content will be presented to the container in /ova
 
 ### Step 3 - Customize the user_defined_vars.yml file
 
-Run the container with the required software components
-
-```
-docker run -it lcamarda/ansible-for-nsxt-v3.1:v1.0
-```
 Once in the container shell, clone the repository with the playbook and variable files
 ```
 root@45b44791e585:/# git clone https://github.com/lcamarda/dcinabox
@@ -44,13 +41,23 @@ vcenter:
   ip: 192.168.110.22
   username: administrator@vsphere.local
   password: VMware1!
+  datacenter: Site-A
   cluster: Cluster-02a
   vds: SiteA-vDS-02
 
-#The NSX Manager appliace must be deployed from OVA already before running the playbook, you need to provide the credentials set during the deplyment process
 nsx:
   username: admin
   password: VMware1!VMware1!
+  folder: VM
+  datacenter: Site-A
+  datastore: esx-03a-local
+  dns_server: 192.168.110.10
+  dns_domain: corp.local
+  ntp_server: 192.168.110.10
+  dns_domain: corp.local
+  ova_file: nsx-unified-appliance-3.1.3.3.0.18844962.ova
+  license: XXXXXXXXXXXXXXX
+
 
 #In this section provide the VLAN ID for the 3 networks.
 #The uplink VLAN represent the transit network between the physical switches and the NSX Gateway
@@ -71,6 +78,7 @@ uplink_network:
 
 #In this section provid the details about the mananagement network.
 management_network:
+  netmask: 255.255.255.0
   prefix_length: 24
   gateway_ip: 192.168.110.1
   nsx_manager_ip: 192.168.110.15
@@ -97,7 +105,7 @@ edge_nodes:
 Save and close the file (:wq!)
 
 ## 4 Run the Playbook
-Run the following command, in around 20-30 minutes the DC in a Box will be ready for consumption
+Run the following command, in around 30-40 minutes the DC in a Box will be ready for consumption
 ```
 root@45b44791e585:/dcinabox# ansible-playbook dc_in_abox.yml
 ```
