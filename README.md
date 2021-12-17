@@ -17,6 +17,8 @@ Steps 1 and 2 should be straightforward. If required, you can consult the docume
 
 [Add an NSX License Key](https://docs.vmware.com/en/VMware-NSX-T-Data-Center/3.1/administration/GUID-8E665EAC-A44D-4FB3-B661-E00C467B2ED5.html#GUID-8E665EAC-A44D-4FB3-B661-E00C467B2ED5)
 
+If you are looking to automate the deployment of NSX Manager and the license installation, check the nsx-manager-ova branch in this repository
+
 ### Step 3 - Customize the user_defined_vars.yml file
 
 Run the container with the required software components
