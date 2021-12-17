@@ -8,17 +8,19 @@ vcenter:
   cluster: Cluster-02a
   vds: SiteA-vDS-02
 
-#The NSX Manager appliace must be deployed from OVA already before running the playbook, you need to provide the credentials set during the deplyment process  
+#The NSX Manager appliace must be deployed from OVA already before running the playbook, you need to provide the credentials set during the deplyment process
 nsx:
   username: admin
   password: VMware1!VMware1!
   folder: VM
   datacenter: Site-A
-  datastore: nfs-02
+  datastore: esx-03a-local
   dns_server: 192.168.110.10
   dns_domain: corp.local
   ntp_server: 192.168.110.10
+  dns_domain: corp.local
   ova_file: nsx-unified-appliance-3.1.3.3.0.18844962.ova
+  license: 012CQ-JNJ40-T8KDT-0732H-24V30
 
 
 #In this section provide the VLAN ID for the 3 networks.
@@ -37,10 +39,10 @@ uplink_network:
   edge02_ip: 192.168.254.2
   gateway_ip: 192.168.254.3
   prefix_length: 24
-  netmask: 255.255.255.0
 
 #In this section provid the details about the mananagement network.
 management_network:
+  netmask: 255.255.255.0
   prefix_length: 24
   gateway_ip: 192.168.110.1
   nsx_manager_ip: 192.168.110.15
