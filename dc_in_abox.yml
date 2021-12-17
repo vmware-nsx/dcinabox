@@ -61,31 +61,6 @@
         validate_certs: False
         license_key: "{{nsx.license}}"
         state: "present"
-        
-    - name: deploy NSX Manager OVA
-      vmware.ansible_for_nsxt.nsxt_deploy_ova:
-        ovftool_path: "/usr/bin"
-        folder: "{{nsx.folder}}"
-        datacenter: "{{vc.datacenter}}"
-        datastore: "{{nsx.datastore}}"
-        portgroup: "{{management_network.portgroup_name}}"
-        cluster: "{{vc.cluster}}"
-        vmname: "nsxt-manager-01"
-        hostname: "nsxt-manager-01"
-        dns_server: "{{nsx.dns_server}}"
-        ntp_server: "{{nsx.ntp_server}}"
-        gateway: "{{management_network.gateway_ip}}"
-        ip_address: "{{management_network.nsx_manager_ip}}"
-        netmask: "{{management_network.netmask}}"
-        admin_password: "{{nsx.password}}"
-        cli_password: "{{nsx.password}}"
-        path_to_ova: "/ova"
-        ova_file: "{{nsx.ova_file}}"
-        vcenter: "{{vc.ip}}"
-        vcenter_user: "{{vc.username}}"
-        vcenter_passwd: "{{vc.password}}"
-        deployment_size: "small"
-        role: "nsx-manager nsx-controller"
 
     - name: Register compute manager
       vmware.ansible_for_nsxt.nsxt_fabric_compute_managers:
