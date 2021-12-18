@@ -48,7 +48,6 @@ vcenter:
 nsx:
   username: admin
   password: VMware1!VMware1!
-  folder: VM
   datacenter: Site-A
   datastore: esx-03a-local
   dns_server: 192.168.110.10
