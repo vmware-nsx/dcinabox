@@ -29,7 +29,11 @@ Navigate to repository directory
 ```
 root@45b44791e585:/# cd dcinabox/
 ```
-Open the file with the environment specific variables and customize it based on the environment characteristics. (Use “i” to edit the file after it is open)
+Switch to the nsx-manager-ova branch
+```
+root@45b44791e585:/dcinabox# git checkout nsx-manager-ova
+```
+Open the file with the environment specific variables and customize it based on the environment characteristics. (Use “i” to edit the file after it opens)
 ```
 root@45b44791e585:/dcinabox# vi user_defined_vars.yml
 ```
