@@ -19,11 +19,11 @@ docker run -v /home/luca/Downloads/:/ova -it  lcamarda/ansible-for-nsxt-v3.1:v1.
 ```
 You need to enter the path to the OVA file folder, in my case: /home/luca/Downloads/. That folder and its content will be presented to the container in /ova
 
-### Step 3 - Customize the user_defined_vars.yml file
+### Step 2 - Customize the user_defined_vars.yml file
 
 Once in the container shell, clone the repository with the playbook and variable files
 ```
-root@45b44791e585:/# git clone https://github.com/lcamarda/dcinabox
+root@45b44791e585:/# git clone https://github.com/vmware-nsx/dcinabox
 ```
 Navigate to repository directory
 ```
@@ -107,7 +107,7 @@ edge_nodes:
 ```
 Save and close the file (:wq!)
 
-### 4 Run the Playbook
+### Step 3 Run the Playbook
 Run the following command, in around 30-40 minutes the DC in a Box will be ready for consumption
 ```
 root@45b44791e585:/dcinabox# ansible-playbook dc_in_abox.yml
