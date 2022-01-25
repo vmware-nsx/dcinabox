@@ -28,7 +28,7 @@ docker run -it lcamarda/ansible-for-nsxt-v3.1:v1.0
 ```
 Once in the container shell, clone the repository with the playbook and variable files
 ```
-root@45b44791e585:/# git clone https://github.com/lcamarda/dcinabox
+root@45b44791e585:/# git clone https://github.com/vmware-nsx/dcinabox
 ```
 Navigate to repository directory
 ```
