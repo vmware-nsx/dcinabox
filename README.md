@@ -1,23 +1,34 @@
 # dcinabox
 This repository provides an Ansible playbook to automate the deployment of the Datacenter in a Box solution described in the NSX-T Easy Adoption Design Guide Document. Running the playbook requires a machine with Ansible, the [VMware supported NSX-T Ansible modules](https://github.com/vmware/ansible-for-nsxt) installed via an Ansible Galaxy, the python package pyVmomi, the VMware ovftool, a text editor, and the git CLI tool. 
 
-To make satisfying those requirements easier, we prepared a docker image that incorporates all the required components. The only requirement on the end user machine is to have docker installed and active.  Please follow the instructions specific to your operating system to install docker.
+To make satisfying those requirements easier, we prepared a docker image that incorporates all the required components except for the VMware ovftool. The only requirement on the end user machine is to have docker installed and active.  Please follow the instructions specific to your operating system to install docker.
 
 ___
 
 ## DC in a Box deployment steps
-1)	Run the container packaging all the required software and mount the NSX OVA Image locally
+1)	Run the container packaging almost all the required software, mount the NSX OVA Image and the ovftool bundle locally, and install ovftool.
 2)	Customize the user_defined_vars.yml file based on your environment
 3)	Run the Ansible Playbook
 
 ### Step 1 - Run the docker container
-You need to download the NSX OVA file to the system where you run docker. Take a note of the absolute path of the directory where the OVA file is located.
+You need to download the NSX OVA file and the ovftool installatin bundle to the system where you run docker. Regardless of the operating system you are running, please download the linux version if the bundle as the container is based on an ubuntu image. Take a note of the absolute path of the directory where you stored the OVA file and the ovftoo bundle. They should be in the same folder.
 
 Run the container via this command:
 ```
-docker run -v /home/luca/Downloads/:/ova -it  lcamarda/ansible-for-nsxt-v3.1:v1.1
+docker run -v /home/luca/Downloads/:/ova -it  lcamarda/ansible-for-nsxt-v3.1:v1.0
 ```
-You need to enter the path to the OVA file folder, in my case: /home/luca/Downloads/. That folder and its content will be presented to the container in /ova
+You need to enter the path to the folder where you stored the NSX manager OVA and the ovftool bundle, in my case: /home/luca/Downloads/. That folder and its content will be presented to the container in /ova
+
+Make the ovftool bundle executable:
+```
+chmod +x ./ova/VMware-ovftool-4.4.3-18663434-lin.x86_64.bundl
+```
+Install the ovftool. 
+```
+./ova/VMware-ovftool-4.4.3-18663434-lin.x86_64.bundle
+```
+Accept the license when prompted.
+
 
 ### Step 2 - Customize the user_defined_vars.yml file
 
