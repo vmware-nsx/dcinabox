@@ -11,7 +11,7 @@ ___
 3)	Run the Ansible Playbook
 
 ### Step 1 - Run the docker container
-You need to download the NSX OVA file and the ovftool installatin bundle to the system where you run docker. Regardless of the operating system you are running, please download the linux version if the bundle as the container is based on an ubuntu image. Take a note of the absolute path of the directory where you stored the OVA file and the ovftoo bundle. They should be in the same folder.
+You need to download the [NSX OVA](https://customerconnect.vmware.com/downloads/details?downloadGroup=NSX-T-3136&productId=982&rPId=84354) file and the [ovftool](https://developer.vmware.com/web/tool/4.4.0/ovf) installatin bundle to the system where you run docker. Regardless of the operating system you are running, please download the linux version if the ovftool installation bundle as the container is based on an ubuntu image. Take a note of the absolute path of the directory where you stored the OVA file and the ovftool installation bundle. They should be in the same folder.
 
 Run the container via this command:
 ```
