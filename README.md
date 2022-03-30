@@ -24,7 +24,7 @@ If you are looking to automate the deployment of NSX Manager and the license ins
 Run the container with the required software components
 
 ```
-docker run -it lcamarda/ansible-for-nsxt-v3.1:v1.0
+docker run -it quay.io/luca_camarda/ansible-for-nsxt-v3.1:v1.0
 ```
 Once in the container shell, clone the repository with the playbook and variable files
 ```
