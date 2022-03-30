@@ -15,7 +15,7 @@ You need to download the [NSX OVA](https://customerconnect.vmware.com/downloads/
 
 Run the container via this command:
 ```
-docker run -v /home/luca/Downloads/:/ova -it  lcamarda/ansible-for-nsxt-v3.1:v1.0
+docker run -v /home/luca/Downloads/:/ova -it quay.io/luca_camarda/ansible-for-nsxt-v3.1:v1.0
 ```
 You need to enter the path to the folder where you stored the NSX manager OVA and the ovftool bundle, in my case: /home/luca/Downloads/. That folder and its content will be presented to the container in /ova
 
