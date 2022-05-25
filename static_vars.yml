@@ -328,10 +328,7 @@
               }
             ],
             "default_gateway_addresses": [ "{{management_network.gateway_ip}}" ],
-            "allow_ssh_root_login": true,
-            "enable_ssh": true,
             "placement_type": "VsphereDeploymentConfig",
-            "hostname": "nsx-edge-01"
           },
           "form_factor": "MEDIUM",
           "node_user_settings": {
@@ -343,7 +340,12 @@
           }
         },
         "resource_type": "EdgeNode",
-        "display_name": "nsx-edge-01"
+        "display_name": "nsx-edge-01",
+        "node_settings": {
+          "allow_ssh_root_login": "True",
+          "enable_ssh": "True",
+          "hostname": "nsx-edge-01"
+        }
       }
     },
     {
@@ -404,10 +406,7 @@
               }
             ],
             "default_gateway_addresses": [ "{{management_network.gateway_ip}}" ],
-            "allow_ssh_root_login": true,
-            "enable_ssh": true,
             "placement_type": "VsphereDeploymentConfig",
-            "hostname": "nsx-edge-02"
           },
           "form_factor": "MEDIUM",
           "node_user_settings": {
@@ -419,10 +418,14 @@
           }
         },
          "resource_type": "EdgeNode",
-        "display_name": "nsx-edge-02"
-      }
+         "display_name": "nsx-edge-02",
+           "node_settings": {
+           "allow_ssh_root_login": "True",
+           "enable_ssh": "True",
+           "hostname": "nsx-edge-02"
+         }
     }
-
+  }
 
 
   ],
