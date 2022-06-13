@@ -336,7 +336,7 @@
             "default_gateway_addresses": [ "{{management_network.gateway_ip}}" ],
             "placement_type": "VsphereDeploymentConfig",
           },
-          "form_factor": "MEDIUM",
+          "form_factor": "{{edge_nodes.size}}",
           "node_user_settings": {
             "cli_username": "admin" ,
             "root_password": "{{edge_nodes.password}}",
@@ -415,7 +415,7 @@
             "default_gateway_addresses": [ "{{management_network.gateway_ip}}" ],
             "placement_type": "VsphereDeploymentConfig",
           },
-          "form_factor": "MEDIUM",
+          "form_factor": "{{edge_nodes.size}}",
           "node_user_settings": {
             "cli_username": "admin" ,
             "root_password": "{{edge_nodes.password}}",
