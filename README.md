@@ -6,7 +6,9 @@ To make satisfying those requirements easier, we prepared a docker image that in
 ___
 ## Applicable NSX-T versions
 NSX-T 3.2
+
 For other versions, please check other branches in this repository
+
 ## DC in a Box deployment steps
 1)	Deploy the NSX Manager OVA via the vSphere Client
 2)	Check that the NSX Manager GUI is accessible and install the license
