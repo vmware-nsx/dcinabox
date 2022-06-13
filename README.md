@@ -4,6 +4,8 @@ This repository provides an Ansible playbook to automate the deployment of the D
 To make satisfying those requirements easier, we prepared a docker image that incorporates all the required components. The only requirement on the end user machine is to have docker installed and active.  Please follow the instructions specific to your operating system to install docker.
 
 ___
+## Applicable NSX-T versions
+NSX-T 3.2
 
 ## DC in a Box deployment steps
 1)	Deploy the NSX Manager OVA via the vSphere Client
