@@ -60,6 +60,12 @@
     }
   ],
 
+  "tep_range": {
+    "start": "192.168.130.5",
+    "end": "192.168.130.254",
+    "cidr": "192.168.130.0/24"
+  }, 
+
   "segments": [
     { "display_name": "DcInABox-Uplink-Trunk",
       "transport_zone_name": "VLAN-ESX-TZ",
@@ -344,7 +350,8 @@
         "node_settings": {
           "allow_ssh_root_login": "True",
           "enable_ssh": "True",
-          "hostname": "nsx-edge-01"
+          "hostname": "nsx-edge-01",
+          "dns_servers": "{{edge_nodes.dns_servers}}"
         }
       }
     },
@@ -422,7 +429,8 @@
            "node_settings": {
            "allow_ssh_root_login": "True",
            "enable_ssh": "True",
-           "hostname": "nsx-edge-02"
+           "hostname": "nsx-edge-02",
+           "dns_servers": "{{edge_nodes.dns_servers}}"
          }
     }
   }
