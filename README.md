@@ -34,6 +34,10 @@ Navigate to repository directory
 ```
 root@45b44791e585:/# cd dcinabox/
 ```
+Siwchto the 3.2.1 branch
+```
+root@45b44791e585:/dcinabox# git checkout 3.2.1
+```
 Open the file with the environment specific variables and customize it based on the environment characteristics. (Use “i” to edit the file after it is open)
 ```
 root@45b44791e585:/dcinabox# vi user_defined_vars.yml
