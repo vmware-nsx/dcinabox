@@ -22,7 +22,7 @@
           id: nsxgateway-localservices
         state: "{{ state }}"
 
-    - name: List Cluster Profiles
+    - name: Get Edge Cluster Id
       vmware.ansible_for_nsxt.nsxt_edge_clusters_facts:
         hostname: "{{ nsx_node1.mgmt_ip }}"
         username: "{{ nsx.username }}"
@@ -33,6 +33,18 @@
     - name: Print edge cluster id
       ansible.builtin.debug:
         msg: "{{edge_clusters.results[0].id}}"
+
+    - name: Enable URL Database on the edge cluster
+      uri:
+        method: PATCH
+        url: https://{{ nsx_node1.mgmt_ip }}/api/v1/infra/sites/default/enforcement-points/default/edge-clusters/{{edge_clusters.results[0].id}}/url-categorization-configs/default
+        user: "{{ nsx.username }}"
+        password: "{{ nsx.password }}"
+        body:
+          enabled: true
+        body_format: json
+        force_basic_auth: yes
+        validate_certs: no
 
     - name: Enable FQDN analysis on the edge cluster
       uri:
@@ -80,7 +92,7 @@
         display_name: "FQDNFiltering"
         id: "FQDNFiltering"
         state: "present"
-        sequence_number: 10
+        sequence_number: 20
         rules:
           - action: "ALLOW"
             sequence_number: 1
