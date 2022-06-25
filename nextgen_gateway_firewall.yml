@@ -5,13 +5,13 @@
     - static_vars.yml
     - user_defined_vars.yml
   tasks:
-    - name: Create NSX L7 Gateway
+    - name: Create NSX Next Generation Gateway
       vmware.ansible_for_nsxt.nsxt_policy_tier1:
         hostname: "{{ nsx_node1.mgmt_ip }}"
         username: "{{ nsx.username }}"
         password: "{{ nsx.password }}"
         validate_certs: "{{ validate_certs }}"
-        display_name: "NSX-L7-GATEWAY"
+        display_name: "NSX-NEXTGEN-GATEWAY"
         route_advertisement_types:
         - "TIER1_CONNECTED"
         tier0_display_name: NSX-GATEWAY
@@ -59,7 +59,7 @@
         validate_certs: no
     
 
-    - name: Create L7 Gateway Firewall DNS Snooping Outbound Policy
+    - name: Create Next Generation Gateway Firewall DNS Snooping Outbound Policy
       vmware.ansible_for_nsxt.nsxt_policy_gateway_policy:
         hostname: "{{ nsx_node1.mgmt_ip }}"
         username: "{{ nsx.username }}"
@@ -81,7 +81,7 @@
             services: ["/infra/services/DNS" , "/infra/services/DNS-UDP"]
             profiles: ["/infra/context-profiles/DNS"]
             scope:
-            - /infra/tier-1s/NSX-L7-GATEWAY
+            - /infra/tier-1s/NSX-NEXTGEN-GATEWAY
 
     - name: Create URL filtering default policy
       vmware.ansible_for_nsxt.nsxt_policy_gateway_policy:
@@ -104,5 +104,5 @@
             ip_protocol: IPV4_IPV6
             profiles: ["/infra/l7-access-profiles/default-l7-access-profile"]
             scope:
-            - /infra/tier-1s/NSX-L7-GATEWAY
+            - /infra/tier-1s/NSX-NEXTGEN-GATEWAY
 
