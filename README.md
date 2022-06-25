@@ -57,7 +57,7 @@ vcenter:
   cluster: Cluster-02a
   vds: SiteA-vDS-02
 
-#The NSX Manager appliace must be deployed from OVA already before running the playbook, you need to provide the credentials set during the deplyment process
+#The NSX Manager appliace must be deployed from OVA already before running the playbook, you need to provide the credentials set during the deplyment process  
 nsx:
   username: admin
   password: VMware1!VMware1!
@@ -66,9 +66,9 @@ nsx:
 #The uplink VLAN represent the transit network between the physical switches and the NSX Gateway
 #The overlay network represents the network where the TEP interfaces reside
 #The management network host the management appliances. i.e., vCenter, NSX Manager, Edge Nodes Management Interfaces....
-uplink_vlan_id: '254'
+uplink_vlan_id: '100'
 overlay_vlan_id: '130'
-management_vlan_id: '100'
+management_vlan_id: '200'
 
 #In this section provide the details about the uplink network. The uplink network must be a /28 as a minimum.
 uplink_network:
@@ -90,19 +90,17 @@ management_network:
   nsxgateway_serviceinterface_present: False #When connecting the DC in a Box to an Untrusted external network (i.e., the Internet set this to True)
   nsxgateway_serviceinterface_ip: 192.168.100.1 #An IP for the service interface on the management network is only required if "nsxgateway_serviceinterface_present" is set to "True"
 
-#provide IP Range for the allocation of the TEP interfaces IP
-tep_range:
-  start: 192.168.130.51
-  end: 192.168.130.91
-  cidr: 192.168.130.0/24
-
 #Provide Edge Node VMs deployment information
 edge_nodes:
+  size: MEDIUM #set to LARGE for TLS decryption and Gateway IDPS, and to XLARGE for Gateway Malware Detection
   edge1_datastore: nfs-02
   edge1_host: esx-03a.corp.local
   edge2_datastore: nfs-02
   edge2_host: esx-04a.corp.local
   password: VMware1!VMware1!
+  dns_servers: 
+  - 192.168.110.10
+# - 192.168.110.11 add additional DNS Servers as members of a list
 ```
 Save and close the file (:wq!)
 
