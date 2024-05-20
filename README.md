@@ -1,5 +1,5 @@
 # dcinabox
-This repository provides an Ansible playbook to automate the deployment of the Datacenter in a Box solution described in the [NSX Easy Adotion Design Guide Document](https://communities.vmware.com/t5/VMware-NSX-Documents/NSX-Easy-Adoption-Design-Guide/ta-p/2936898). Running the playbook requires a machine with Ansible, the [VMware supported NSX-T Ansible modules](https://github.com/vmware/ansible-for-nsxt) installed via an Ansible Galaxy, the python package pyVmomi, a text editor, and the git CLI tool. 
+This repository provides an Ansible playbook to automate the deployment of the Datacenter in a Box solution described in the [NSX Easy Adotion Design Guide Document](https://community.broadcom.com/blogs/luca-camarda/2024/05/20/nsx-easy-adoption-design-guide?CommunityKey=b76535ef-c5a2-474d-8270-3e83685f020e). Running the playbook requires a machine with Ansible, the [VMware supported NSX-T Ansible modules](https://github.com/vmware/ansible-for-nsxt) installed via an Ansible Galaxy, the python package pyVmomi, a text editor, and the git CLI tool. 
 
 To make satisfying those requirements easier, we prepared a docker image that incorporates all the required components. The only requirement on the end user machine is to have docker installed and active.  Please follow the instructions specific to your operating system to install docker.
 
